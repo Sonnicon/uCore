@@ -2,16 +2,22 @@ package io.anuke.ucore.entities;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
-
 import com.badlogic.gdx.utils.IntMap;
 import io.anuke.ucore.util.QuadTree;
+
+import java.util.Iterator;
 
 public class EntityGroup<T extends Entity>{
 	private static int lastid;
 	private final int id;
 
 	private IntMap<T> map;
-	private Array<T> entityArray = new Array<>();
+	//TODO
+	private Array<T> entityArray = new Array(){
+		public Iterator<T> iterator () {
+			return new ArrayIterator<T>(this);
+		}
+	};
 	private Array<T> entitiesToRemove = new Array<>();
 	private Array<T> entitiesToAdd = new Array<>();
 	private QuadTree<SolidEntity> tree;
@@ -78,7 +84,7 @@ public class EntityGroup<T extends Entity>{
 	}
 	
 	public void setTree(float x, float y, float w, float h){
-		tree = new QuadTree(Entities.maxLeafObjects, new Rectangle(x, y, w, h));
+		tree = new QuadTree<>(Entities.maxLeafObjects, new Rectangle(x, y, w, h));
 	}
 	
 	public int size(){
