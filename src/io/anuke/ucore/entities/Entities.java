@@ -100,7 +100,29 @@ public class Entities{
 			return closest;
 		}
 	}
+	public static SolidEntity getClosestArea(EntityGroup<?> group, float x, float y, float range, float rangeBound, Predicate<Entity> pred){
+		synchronized (entityLock) {
+			SolidEntity closest = null;
+			float cdist = 0f;
+			Array<SolidEntity> entities = getNearby(group, x, y, range * 2f);
+			Array<SolidEntity> entitiesClose = getNearby(group, x, y, rangeBound * 2f);
+			for (int i = 0; i < entities.size; i++) {
+				SolidEntity e = entities.get(i);
+				if (!pred.test(e))
+					continue;
+				if (Arrays.asList(entitiesClose).contains(e))
+					continue;
+				float dist = Vector2.dst(e.x, e.y, x, y);
+				if (dist < range)
+					if (closest == null || dist < cdist) {
+						closest = e;
+						cdist = dist;
+					}
+			}
 
+			return closest;
+		}
+	}
 	public static void clear(){
 		for(EntityGroup group : groupArray){
 			group.clear();
